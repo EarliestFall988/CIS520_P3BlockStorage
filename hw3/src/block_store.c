@@ -35,10 +35,31 @@ block_store_t *block_store_create()
 
 void block_store_destroy(block_store_t *const bs)
 {
+
+    if(bs == NULL)
+    {
+        return;
+    }
+
     free(bs);
 }
 size_t block_store_allocate(block_store_t *const bs)
 {
+
+    if(bs == NULL)
+    {
+        return 0;
+    }
+
+    // for(int i = 0; i < 256; i++)
+    // {
+    //     if(bitmap_get(bs->bitmap, i) == 0)
+    //     {
+    //         bitmap_set(bs->bitmap, i, 1);
+    //         return i;
+    //     }
+    // }
+
     UNUSED(bs);
     return 0;
 }
@@ -70,7 +91,7 @@ size_t block_store_get_free_blocks(const block_store_t *const bs)
 
 size_t block_store_get_total_blocks()
 {
-    return 0;
+    return 255;
 }
 
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
