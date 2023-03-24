@@ -2,6 +2,19 @@
 #include <stdint.h>
 #include "bitmap.h"
 #include "block_store.h"
+#include <math.h>
+#include <unistd.h>
+#include <errno.h>
+
+// YOu might find this handy??
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+
 // include more if you need
 
 // You might find this handy.  I put it around unused parameters, but you should
@@ -10,7 +23,8 @@
 
 block_store_t *block_store_create()
 {
-    return NULL;
+    block_store_t *bs_pointer = malloc(sizeof(pow(256,9)));
+    return bs_pointer;
 }
 
 void block_store_destroy(block_store_t *const bs)
