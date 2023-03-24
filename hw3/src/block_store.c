@@ -21,15 +21,21 @@
 // remove it before you submit. Just allows things to compile initially.
 #define UNUSED(x) (void)(x)
 
+typedef struct block_store
+{
+    bitmap_t *bitmap;
+    uint8_t *data;
+} block_store_t;
+
 block_store_t *block_store_create()
 {
-    block_store_t *bs_pointer = malloc(sizeof(pow(256,9)));
+    block_store_t *bs_pointer = malloc(sizeof(block_store_t)); //calloc(0,sizeof(pow(256,9)));
     return bs_pointer;
 }
 
 void block_store_destroy(block_store_t *const bs)
 {
-    UNUSED(bs);
+    free(bs);
 }
 size_t block_store_allocate(block_store_t *const bs)
 {
