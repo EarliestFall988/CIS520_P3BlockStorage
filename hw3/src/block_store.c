@@ -25,11 +25,15 @@ typedef struct block_store
 {
     bitmap_t *bitmap;
     uint8_t *data;
+    size_t used;
 } block_store_t;
 
 block_store_t *block_store_create()
 {
     block_store_t *bs_pointer = malloc(sizeof(block_store_t)); //calloc(0,sizeof(pow(256,9)));
+    bs_pointer->bitmap = bitmap_create(BLOCK_STORE_NUM_BLOCKS);
+    //need to put bitmap into data
+    bitmap_set(bs_pointer->bitmap, 127);
     return bs_pointer;
 }
 
@@ -51,41 +55,54 @@ size_t block_store_allocate(block_store_t *const bs)
         return SIZE_MAX;
     }
 
-    // for(int i = 0; i < 256; i++)
-    // {
-    //     if(bitmap_get(bs->bitmap, i) == 0)
-    //     {
-    //         bitmap_set(bs->bitmap, i, 1);
-    //         return i;
-    //     }
-    // }
+    size_t first_zero = bitmap_ffz(bs->bitmap);
+    bitmap_set(bs->bitmap, first_zero);
+    bs->used++;
 
-    UNUSED(bs);
-    return 0;
+    return first_zero;
 }
 
 bool block_store_request(block_store_t *const bs, const size_t block_id)
 {
-    /* if(!(bitmap_test(bs->bitmap,block_id)))  //tests if bit is set //causing seg fault
+    if(bs == NULL)
     {
-           return true;
-    } */
-
-    UNUSED(bs);
-    UNUSED(block_id);
+        return false;
+    }
+    if(block_id >= bitmap_get_bits(bs->bitmap))
+    {
+        return false;
+    }
+    if(!(bitmap_test(bs->bitmap,block_id))) 
+    {
+        bitmap_set(bs->bitmap, block_id);
+        return true;
+    } 
     return false;
 }
 
 void block_store_release(block_store_t *const bs, const size_t block_id)
 {
-    //bitmap_reset(bs->bitmap,block_id);  //resets the bit  //causing segfault
-    UNUSED(bs);
-    UNUSED(block_id);
+    if(bs != NULL )
+    {
+        if(block_id >= bitmap_get_bits(bs->bitmap))
+        {
+            bitmap_reset(bs->bitmap,block_id); 
+        }
+    }
+    
 }
 
 size_t block_store_get_used_blocks(const block_store_t *const bs)
 {
-    int count = 0;
+    if(bs == NULL)
+    {
+        return SIZE_MAX;
+    }
+    else
+    {
+        //return bs->used;
+        return bitmap_total_set(bs->bitmap) - 1;
+    }
     /* for(int i = 0; i < 256; i++)     //iterates through blocks
     {
         if(bitmap_test(bs->bitmap,i))   
@@ -95,14 +112,17 @@ size_t block_store_get_used_blocks(const block_store_t *const bs)
 
     } */
 
-    UNUSED(bs);
-    return count;                       //return count
+    //UNUSED(bs);
+    //return count;                       //return count
 }
 
 size_t block_store_get_free_blocks(const block_store_t *const bs)
 {
-    UNUSED(bs);
-    return 0;
+    if(bs == NULL)
+    {
+        return SIZE_MAX;
+    }
+    return BLOCK_STORE_NUM_BLOCKS - bitmap_total_set(bs->bitmap);
 }
 
 size_t block_store_get_total_blocks()
