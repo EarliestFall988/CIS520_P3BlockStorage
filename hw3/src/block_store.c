@@ -41,7 +41,7 @@ block_store_t *block_store_create()
 void block_store_destroy(block_store_t *const bs)
 {
 
-    if (bs == NULL)
+    if(bs == NULL)
     {
         return;
     }
@@ -141,30 +141,15 @@ size_t block_store_get_total_blocks()
 
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
 {
-    // if(bs == NULL || buffer == NULL)
-    // {
-    //     return 0;
-    // }
-
-    // printf("testing block stuff block_id");
-
-    // printf("block_id: %ld", block_id);
-
-    // buffer = malloc(BLOCK_SIZE_BYTES);
-
-    // if(buffer == NULL)
-    // {
-    //     printf("Error: malloc failed");
-    //     return 0;
-    // }
-
-    // memcpy(buffer,&(bs->data)[block_id],BLOCK_SIZE_BYTES);
-    // return BLOCK_SIZE_BYTES;
-
-    UNUSED(bs);
+    if(bs == NULL || buffer == NULL)
+    {
+        return 0;
+    }
+    buffer = malloc(BLOCK_SIZE_BYTES);
+    memcpy(buffer,(void *)&(bs->data)[block_id],BLOCK_SIZE_BYTES);
+    free(buffer);
     UNUSED(block_id);
-    UNUSED(buffer);
-    return 0;
+    return BLOCK_SIZE_BYTES;
 }
 
 size_t block_store_write(block_store_t *const bs, const size_t block_id, const void *buffer)
