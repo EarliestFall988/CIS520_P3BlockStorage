@@ -66,6 +66,11 @@ size_t block_store_allocate(block_store_t *const bs)
 
 bool block_store_request(block_store_t *const bs, const size_t block_id)
 {
+    /* if(!(bitmap_test(bs->bitmap,block_id)))  //tests if bit is set //causing seg fault
+    {
+           return true;
+    } */
+
     UNUSED(bs);
     UNUSED(block_id);
     return false;
@@ -73,14 +78,25 @@ bool block_store_request(block_store_t *const bs, const size_t block_id)
 
 void block_store_release(block_store_t *const bs, const size_t block_id)
 {
+    //bitmap_reset(bs->bitmap,block_id);  //resets the bit  //causing segfault
     UNUSED(bs);
     UNUSED(block_id);
 }
 
 size_t block_store_get_used_blocks(const block_store_t *const bs)
 {
+    int count = 0;
+    /* for(int i = 0; i < 256; i++)     //iterates through blocks
+    {
+        if(bitmap_test(bs->bitmap,i))   
+        {
+            count++;                    //add to counter if set
+        }
+
+    } */
+
     UNUSED(bs);
-    return 0;
+    return count;                       //return count
 }
 
 size_t block_store_get_free_blocks(const block_store_t *const bs)
