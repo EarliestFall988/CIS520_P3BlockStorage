@@ -48,7 +48,7 @@ size_t block_store_allocate(block_store_t *const bs)
 
     if(bs == NULL)
     {
-        return 0;
+        return SIZE_MAX;
     }
 
     // for(int i = 0; i < 256; i++)
