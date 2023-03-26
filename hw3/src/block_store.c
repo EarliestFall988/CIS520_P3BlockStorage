@@ -48,16 +48,16 @@ void block_store_destroy(block_store_t *const bs)
 
     free(bs);
 }
-void block_store_destroy(block_store_t *const bs)
-{
+// void block_store_destroy(block_store_t *const bs)
+// {
 
-    if (bs == NULL)
-    {
-        return;
-    }
+//     if (bs == NULL)
+//     {
+//         return;
+//     }
 
-    free(bs);
-}
+//     free(bs);
+// }
 size_t block_store_allocate(block_store_t *const bs)
 {
 
