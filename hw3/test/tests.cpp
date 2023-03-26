@@ -213,6 +213,9 @@ TEST(block_store, count_free_and_used_null)
 
 TEST(block_store_write_read, valid_write)
 {
+
+    printf("running test");
+
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
