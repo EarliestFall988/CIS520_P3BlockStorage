@@ -48,19 +48,9 @@ void block_store_destroy(block_store_t *const bs)
 
     free(bs);
 }
-void block_store_destroy(block_store_t *const bs)
-{
 
-    if (bs == NULL)
-    {
-        return;
-    }
-
-    free(bs);
-}
 size_t block_store_allocate(block_store_t *const bs)
 {
-
     if (bs == NULL)
     {
         return SIZE_MAX;
@@ -171,7 +161,7 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
     {
         return 0;
     }
-    //memcpy(&(bs->data[block_id]), buffer,BLOCK_SIZE_BYTES);
+    memcpy(&(bs->data[block_id]), buffer,BLOCK_SIZE_BYTES);
     UNUSED(block_id);
     return BLOCK_SIZE_BYTES;
 }
