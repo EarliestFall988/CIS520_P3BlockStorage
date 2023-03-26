@@ -10,28 +10,31 @@
 unsigned int score;
 unsigned int total;
 
-class GradeEnvironment : public testing::Environment {
-    public:
-        virtual void SetUp() {
-            score = 0;
-            total = 100;
-        }
-        virtual void TearDown() {
-            ::testing::Test::RecordProperty("points_given", score);
-            ::testing::Test::RecordProperty("points_total", total);
-            std::cout << "SCORE: " << score << '/' << total << std::endl;
-        }
+class GradeEnvironment : public testing::Environment
+{
+public:
+    virtual void SetUp()
+    {
+        score = 0;
+        total = 100;
+    }
+    virtual void TearDown()
+    {
+        ::testing::Test::RecordProperty("points_given", score);
+        ::testing::Test::RecordProperty("points_total", total);
+        std::cout << "SCORE: " << score << '/' << total << std::endl;
+    }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     testing::InitGoogleTest(&argc, argv);
     ::testing::AddGlobalTestEnvironment(new GradeEnvironment);
     return RUN_ALL_TESTS();
 }
 
-
-
-TEST(block_store_create, create) {
+TEST(block_store_create, create)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -41,19 +44,21 @@ TEST(block_store_create, create) {
     score += 3;
 }
 
-TEST(block_store_destroy, null_pointer) {
+TEST(block_store_destroy, null_pointer)
+{
     block_store_destroy(NULL);
     // Congrats, you didn't segfault!
     score += 3;
 }
 
-
-TEST(block_store_get_total_blocks, num_blocks) {
+TEST(block_store_get_total_blocks, num_blocks)
+{
     ASSERT_EQ(BLOCK_STORE_AVAIL_BLOCKS, block_store_get_total_blocks());
     score += 2;
 }
 
-TEST(block_store_alloc_free_req, allocate_null) {
+TEST(block_store_alloc_free_req, allocate_null)
+{
     size_t id;
     id = block_store_allocate(nullptr);
     ASSERT_EQ(SIZE_MAX, id) << "allocate should return SIZE_MAX when passed null.\n";
@@ -61,7 +66,8 @@ TEST(block_store_alloc_free_req, allocate_null) {
 }
 
 // Nothing should have been allocated yet.
-TEST(block_store_alloc_free_req, allocate_first) {
+TEST(block_store_alloc_free_req, allocate_first)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -72,7 +78,8 @@ TEST(block_store_alloc_free_req, allocate_first) {
     score += 5;
 }
 
-TEST(block_store_alloc_free_req, allocate_and_free) {
+TEST(block_store_alloc_free_req, allocate_and_free)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -87,13 +94,15 @@ TEST(block_store_alloc_free_req, allocate_and_free) {
     score += 5;
 }
 
-TEST(block_store_alloc_free_req, over_allocate) {
+TEST(block_store_alloc_free_req, over_allocate)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
 
     size_t id = 100;
-    for (size_t i = 0; i < BLOCK_STORE_AVAIL_BLOCKS; i++) {
+    for (size_t i = 0; i < BLOCK_STORE_AVAIL_BLOCKS; i++)
+    {
         id = block_store_allocate(bs);
         ASSERT_EQ(i, id);
     }
@@ -106,8 +115,8 @@ TEST(block_store_alloc_free_req, over_allocate) {
     score += 5;
 }
 
-
-TEST(block_store_alloc_free_req, null_pointers) {
+TEST(block_store_alloc_free_req, null_pointers)
+{
     size_t res = 0;
 
     res = block_store_allocate(NULL);
@@ -124,8 +133,8 @@ TEST(block_store_alloc_free_req, null_pointers) {
     score += 2;
 }
 
-
-TEST(block_store_alloc_free_req, request_good_100) {
+TEST(block_store_alloc_free_req, request_good_100)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -139,7 +148,8 @@ TEST(block_store_alloc_free_req, request_good_100) {
     score += 2;
 }
 
-TEST(block_store_alloc_free_req, request_bad_500) {
+TEST(block_store_alloc_free_req, request_bad_500)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -153,7 +163,8 @@ TEST(block_store_alloc_free_req, request_bad_500) {
     score += 2;
 }
 
-TEST(block_store_alloc_free_req, request_same_twice) {
+TEST(block_store_alloc_free_req, request_same_twice)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -169,7 +180,8 @@ TEST(block_store_alloc_free_req, request_same_twice) {
     score += 2;
 }
 
-TEST(block_store, count_free_and_used) {
+TEST(block_store, count_free_and_used)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -190,7 +202,8 @@ TEST(block_store, count_free_and_used) {
     score += 5;
 }
 
-TEST(block_store, count_free_and_used_null) {
+TEST(block_store, count_free_and_used_null)
+{
     ASSERT_EQ(SIZE_MAX, block_store_get_used_blocks(NULL));
 
     ASSERT_EQ(SIZE_MAX, block_store_get_free_blocks(NULL));
@@ -198,11 +211,12 @@ TEST(block_store, count_free_and_used_null) {
     score += 2;
 }
 
-TEST(block_store_write_read, valid_write) {
+TEST(block_store_write_read, valid_write)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
-    uint8_t *buffer = (uint8_t *) calloc(1, BLOCK_SIZE_BYTES);
+    uint8_t *buffer = (uint8_t *)calloc(1, BLOCK_SIZE_BYTES);
     ASSERT_NE(nullptr, buffer) << "malloc ... failed?" << std::endl;
     memset(buffer, '~', 10);
 
@@ -221,7 +235,8 @@ TEST(block_store_write_read, valid_write) {
     score += 10;
 }
 
-TEST(block_store_write_read, null_bs_write) {
+TEST(block_store_write_read, null_bs_write)
+{
     size_t bytesWritten;
     // Want to give buffer a valid value since we are testing bs.
     int buffer;
@@ -231,7 +246,8 @@ TEST(block_store_write_read, null_bs_write) {
     score += 2;
 }
 
-TEST(block_store_write_read, null_buffer_write) {
+TEST(block_store_write_read, null_buffer_write)
+{
     size_t bytesWritten;
     // Want to give bs a valid value since we are testing bs.
     block_store_t *bs = block_store_create();
@@ -249,7 +265,8 @@ TEST(block_store_write_read, null_buffer_write) {
     score += 2;
 }
 
-TEST(block_store_write_read, null_bs_read) {
+TEST(block_store_write_read, null_bs_read)
+{
     size_t bytesWritten;
     // Want to give buffer a valid value since we are testing bs.
     int buffer;
@@ -258,7 +275,8 @@ TEST(block_store_write_read, null_bs_read) {
     score += 2;
 }
 
-TEST(block_store_write_read, null_buffer_read) {
+TEST(block_store_write_read, null_buffer_read)
+{
     size_t bytesWritten;
     // Want to give bs a valid value since we are testing bs.
     block_store_t *bs = block_store_create();
@@ -276,7 +294,8 @@ TEST(block_store_write_read, null_buffer_read) {
     score += 2;
 }
 
-TEST(block_store_write_read, valid_write_and_read) {
+TEST(block_store_write_read, valid_write_and_read)
+{
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
@@ -287,7 +306,7 @@ TEST(block_store_write_read, valid_write_and_read) {
     ASSERT_EQ(true, success);
 
     // First write to the block store...
-    uint8_t *write_buffer = (uint8_t *) calloc(1, BLOCK_SIZE_BYTES);
+    uint8_t *write_buffer = (uint8_t *)calloc(1, BLOCK_SIZE_BYTES);
     // ASSERT will lead to seg fault, but better than leak I guess?
     ASSERT_NE(nullptr, write_buffer) << "calloc ... failed?" << std::endl;
     memset(write_buffer, '~', 10);
@@ -296,7 +315,7 @@ TEST(block_store_write_read, valid_write_and_read) {
     ASSERT_EQ(bytesWritten, BLOCK_SIZE_BYTES);
 
     // Now read from the block store...
-    uint8_t *read_buffer = (uint8_t *) calloc(1, BLOCK_SIZE_BYTES);
+    uint8_t *read_buffer = (uint8_t *)calloc(1, BLOCK_SIZE_BYTES);
     // ASSERT will lead to seg fault, but better than leak I guess?
     ASSERT_NE(nullptr, read_buffer) << "calloc ... failed?" << std::endl;
     size_t bytes_read;
@@ -311,8 +330,7 @@ TEST(block_store_write_read, valid_write_and_read) {
     score += 10;
 }
 
-
-TEST(block_store_serialize, valid_serialize) 
+TEST(block_store_serialize, valid_serialize)
 {
     block_store_t *bs = NULL;
     bs = block_store_create();
@@ -327,7 +345,7 @@ TEST(block_store_serialize, valid_serialize)
     ASSERT_EQ(true, success);
 
     // Next write to the block store...
-    uint8_t *write_buffer = (uint8_t *) calloc(1, BLOCK_SIZE_BYTES);
+    uint8_t *write_buffer = (uint8_t *)calloc(1, BLOCK_SIZE_BYTES);
     // ASSERT will lead to seg fault, but better than leak I guess?
     ASSERT_NE(nullptr, write_buffer) << "calloc ... failed?" << std::endl;
     memset(write_buffer, '~', 100);
@@ -378,12 +396,12 @@ TEST(block_store_serialize, check_file_size)
     // Just in case your bytesSerialized is lying...
     struct stat st;
     stat("test.bs", &st);
-    ASSERT_EQ(st.st_size,BLOCK_STORE_NUM_BYTES);
+    ASSERT_EQ(st.st_size, BLOCK_STORE_NUM_BYTES);
 
     score += 4;
 }
 
-TEST(block_store_serialize, null_filename) 
+TEST(block_store_serialize, null_filename)
 {
     block_store_t *bs = NULL;
     bs = block_store_create();
@@ -399,7 +417,7 @@ TEST(block_store_serialize, null_filename)
     score += 2;
 }
 
-TEST(block_store_serialize, null_bs) 
+TEST(block_store_serialize, null_bs)
 {
     block_store_t *bs = NULL;
 
@@ -411,7 +429,7 @@ TEST(block_store_serialize, null_bs)
     score += 2;
 }
 
-TEST(block_store_deserialize, valid_deserialize) 
+TEST(block_store_deserialize, valid_deserialize)
 {
     block_store_t *bsWrite = NULL;
     bsWrite = block_store_create();
@@ -426,13 +444,13 @@ TEST(block_store_deserialize, valid_deserialize)
     ASSERT_EQ(true, success);
 
     // Next write to the block store...
-    uint8_t *write_buffer = (uint8_t *) calloc(1, BLOCK_SIZE_BYTES);
+    uint8_t *write_buffer = (uint8_t *)calloc(1, BLOCK_SIZE_BYTES);
     // ASSERT will lead to seg fault, but better than leak I guess?
     ASSERT_NE(nullptr, write_buffer) << "calloc ... failed?" << std::endl;
     memset(write_buffer, 'J', 10);
-    memset(write_buffer+10, 'i', 10);
-    memset(write_buffer+20, 'm', 10);
-    memset(write_buffer+30, 'R', 10);
+    memset(write_buffer + 10, 'i', 10);
+    memset(write_buffer + 20, 'm', 10);
+    memset(write_buffer + 30, 'R', 10);
     size_t bytesWritten;
     bytesWritten = block_store_write(bsWrite, id, write_buffer);
     ASSERT_EQ(bytesWritten, BLOCK_SIZE_BYTES);
@@ -444,9 +462,8 @@ TEST(block_store_deserialize, valid_deserialize)
 
     // Don't free the write_buffer because we will use it later to compare
     // to the read
-    //free(write_buffer);
+    // free(write_buffer);
     block_store_destroy(bsWrite);
-
 
     block_store_t *bsRead = NULL;
 
@@ -461,7 +478,7 @@ TEST(block_store_deserialize, valid_deserialize)
     ASSERT_EQ(false, success);
 
     // Now read from the block store...
-    uint8_t *read_buffer = (uint8_t *) calloc(1, BLOCK_SIZE_BYTES);
+    uint8_t *read_buffer = (uint8_t *)calloc(1, BLOCK_SIZE_BYTES);
     // ASSERT will lead to seg fault, but better than leak I guess?
     ASSERT_NE(nullptr, read_buffer) << "calloc ... failed?" << std::endl;
     size_t bytes_read;
@@ -476,8 +493,7 @@ TEST(block_store_deserialize, valid_deserialize)
     score += 12;
 }
 
-
-TEST(block_store_deserialize, null_filename) 
+TEST(block_store_deserialize, null_filename)
 {
     // Try to call deserialize...
     block_store_t *bs;
@@ -485,4 +501,3 @@ TEST(block_store_deserialize, null_filename)
     ASSERT_EQ(0, bs);
     score += 2;
 }
-
