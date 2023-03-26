@@ -147,7 +147,9 @@ size_t block_store_read(const block_store_t *const bs, const size_t block_id, vo
         return 0;
     }
     buffer = malloc(BLOCK_SIZE_BYTES);
-    memcpy(buffer,&(bs->data)[block_id],BLOCK_SIZE_BYTES);
+    memcpy(buffer,(void *)&(bs->data)[block_id],BLOCK_SIZE_BYTES);
+    free(buffer);
+    UNUSED(block_id);
     return BLOCK_SIZE_BYTES;
 }
 
@@ -161,7 +163,7 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
     {
         return 0;
     }
-    memcpy(&(bs->data[block_id]), buffer,BLOCK_SIZE_BYTES);
+    //memcpy(&(bs->data[block_id]), buffer,BLOCK_SIZE_BYTES);
     UNUSED(block_id);
     return BLOCK_SIZE_BYTES;
 }
