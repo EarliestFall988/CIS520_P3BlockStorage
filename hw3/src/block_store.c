@@ -120,11 +120,13 @@ size_t block_store_get_free_blocks(const block_store_t *const bs)
     return BLOCK_STORE_NUM_BLOCKS - bitmap_total_set(bs->bitmap);
 }
 
+// get total number of blocks
 size_t block_store_get_total_blocks()
 {
     return BLOCK_STORE_AVAIL_BLOCKS; // return total number of blocks
 }
 
+// read from the block store
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
 {
     if (bs == NULL || buffer == NULL) // check if bs is null or buffer is null
@@ -141,6 +143,7 @@ size_t block_store_read(const block_store_t *const bs, const size_t block_id, vo
     return BLOCK_SIZE_BYTES; // return number of bytes read which is BLOCK_SIZE_BYTES
 }
 
+// write to the block store
 size_t block_store_write(block_store_t *const bs, const size_t block_id, const void *buffer)
 {
     // check if bs is null or buffer is null or block_id is greater than BLOCK_STORE_NUM_BLOCKS
@@ -168,6 +171,7 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
     return BLOCK_SIZE_BYTES; // return number of bytes written which is BLOCK_SIZE_BYTES
 }
 
+// deserialize the block store from the file
 block_store_t *block_store_deserialize(const char *const filename)
 {
 
@@ -197,6 +201,7 @@ block_store_t *block_store_deserialize(const char *const filename)
     return bs; // return block store
 }
 
+// serialize the block store to the file
 size_t block_store_serialize(const block_store_t *const bs, const char *const filename)
 {
 
