@@ -17,10 +17,6 @@
 
 // include more if you need
 
-// You might find this handy.  Is put it around unused parameters, but you should
-// remove it before you submit. Just allows things to compile initially.
-#define UNUSED(x) (void)(x)
-
 typedef struct block_store
 {
     bitmap_t *bitmap;
@@ -30,11 +26,11 @@ typedef struct block_store
 
 block_store_t *block_store_create()
 {
-    block_store_t *bs_pointer = malloc(sizeof(block_store_t)); // calloc(0,sizeof(pow(256,9)));
+    block_store_t *bs_pointer = malloc(sizeof(block_store_t));
     bs_pointer->bitmap = bitmap_create(BLOCK_STORE_NUM_BLOCKS);
-    // need to put bitmap into data
+
     bitmap_set(bs_pointer->bitmap, 127);
-    // bitmap_set(bs_pointer->bitmap, 128);
+
     return bs_pointer;
 }
 
@@ -109,19 +105,9 @@ size_t block_store_get_used_blocks(const block_store_t *const bs)
     }
     else
     {
-        // return bs->used; not working yet
         return bitmap_total_set(bs->bitmap) - 1;
     }
-    /* for(int i = 0; i < 256; i++)     //iterates through blocks
-    {
-        if(bitmap_test(bs->bitmap,i))
-        {
-            count++;                    //add to counter if set
-        }
 
-    } */
-
-    // UNUSED(bs);
     // return count;                       //return count
 }
 
@@ -173,17 +159,11 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
         return 0;
     }
 
-    bs->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS); // need to be more specfic with the location to alocate?
+    bs->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS);
 
     memcpy((void *)&(bs->data)[block_id], buffer, BLOCK_SIZE_BYTES);
 
-    // UNUSED(block_id);
     return BLOCK_SIZE_BYTES;
-
-    // UNUSED(bs);
-    // UNUSED(block_id);
-    // UNUSED(buffer);
-    // return 0;
 }
 
 block_store_t *block_store_deserialize(const char *const filename)
@@ -194,24 +174,28 @@ block_store_t *block_store_deserialize(const char *const filename)
         return NULL;
     }
 
-    FILE *ptr = fopen(filename, "r");
-    if (ptr == NULL)
+    // void *ptr = fopen(filename, "r");
+
+    int f = open(filename, O_RDONLY);
+
+    if (f == -1)
     {
         return NULL;
     }
 
     block_store_t *bs = block_store_create();
 
-    size_t result = fread(bs, 1, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES, ptr);
+    ssize_t result = read(f, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
 
-    if (result == 0)
+    close(f);
+    close(f);
+
+    if (result == -1)
     {
         return NULL;
     }
 
     return bs;
-
-    // return NULL;
 }
 
 size_t block_store_serialize(const block_store_t *const bs, const char *const filename)
@@ -222,13 +206,16 @@ size_t block_store_serialize(const block_store_t *const bs, const char *const fi
         return 0;
     }
 
-    FILE *ptr = fopen(filename, "w+");
-    if (ptr == NULL)
+    int file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+    if (file == -1)
     {
         return 0;
     }
 
-    size_t result = fwrite(bs, 1, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES, ptr);
+    size_t result = write(file, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
+
+    close(file);
 
     return result;
 }
