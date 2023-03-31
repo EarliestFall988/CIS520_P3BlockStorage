@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-// YOu might find this handy??
+// You might find this handy??
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -122,100 +122,99 @@ size_t block_store_get_free_blocks(const block_store_t *const bs)
 
 size_t block_store_get_total_blocks()
 {
-    return BLOCK_STORE_AVAIL_BLOCKS;
+    return BLOCK_STORE_AVAIL_BLOCKS; // return total number of blocks
 }
 
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
 {
-    if (bs == NULL || buffer == NULL)
+    if (bs == NULL || buffer == NULL) // check if bs is null or buffer is null
     {
         return 0;
     }
-    if (block_id >= BLOCK_STORE_NUM_BLOCKS)
+    if (block_id >= BLOCK_STORE_NUM_BLOCKS) // check if block_id is greater than BLOCK_STORE_NUM_BLOCKS
     {
         return 0;
     }
 
-    memcpy(buffer, (void *)&(bs->data)[block_id], BLOCK_SIZE_BYTES);
+    memcpy(buffer, (void *)&(bs->data)[block_id], BLOCK_SIZE_BYTES); // copy block store to buffer
 
-    return BLOCK_SIZE_BYTES;
+    return BLOCK_SIZE_BYTES; // return number of bytes read which is BLOCK_SIZE_BYTES
 }
 
 size_t block_store_write(block_store_t *const bs, const size_t block_id, const void *buffer)
 {
+    // check if bs is null or buffer is null or block_id is greater than BLOCK_STORE_NUM_BLOCKS
     if (bs == NULL || buffer == NULL || block_id >= BLOCK_STORE_NUM_BLOCKS)
     {
         return 0;
     }
-    if (bs->data == NULL)
+
+    if (bs->data == NULL) // check if data is null
     {
         return 0;
     }
 
-    size_t someResult = block_store_allocate(bs);
+    size_t someResult = block_store_allocate(bs); // allocate block
 
-    if (someResult == SIZE_MAX)
+    if (someResult == SIZE_MAX) // check if block store is full
     {
         return 0;
     }
 
-    bs->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS);
+    bs->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS); // allocate memory for data
 
-    memcpy((void *)&(bs->data)[block_id], buffer, BLOCK_SIZE_BYTES);
+    memcpy((void *)&(bs->data)[block_id], buffer, BLOCK_SIZE_BYTES); // copy buffer to block store
 
-    return BLOCK_SIZE_BYTES;
+    return BLOCK_SIZE_BYTES; // return number of bytes written which is BLOCK_SIZE_BYTES
 }
 
 block_store_t *block_store_deserialize(const char *const filename)
 {
 
-    if (filename == NULL)
+    if (filename == NULL) // check if filename is null
     {
         return NULL;
     }
 
-    // void *ptr = fopen(filename, "r");
+    int f = open(filename, O_RDONLY); // open file with read only permissions
 
-    int f = open(filename, O_RDONLY);
-
-    if (f == -1)
+    if (f == -1) // check if file is null
     {
         return NULL;
     }
 
-    block_store_t *bs = block_store_create();
+    block_store_t *bs = block_store_create(); // create block store
 
-    ssize_t result = read(f, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
+    ssize_t result = read(f, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES); // read from file
 
-    close(f);
-    close(f);
+    close(f); // close file
 
-    if (result == -1)
+    if (result == -1) // check if result is null
     {
         return NULL;
     }
 
-    return bs;
+    return bs; // return block store
 }
 
 size_t block_store_serialize(const block_store_t *const bs, const char *const filename)
 {
 
-    if (bs == NULL || filename == NULL)
+    if (bs == NULL || filename == NULL) // check if bs is null or filename is null
     {
         return 0;
     }
 
-    int file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    int file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666); // open file
 
-    if (file == -1)
+    if (file == -1) // check if file is null
     {
         return 0;
     }
 
-    size_t result = write(file, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
+    size_t result = write(file, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES); // write to file
 
-    close(file);
+    close(file); // close file
 
     return result;
 }
