@@ -194,7 +194,19 @@ block_store_t *block_store_deserialize(const char *const filename)
 
 size_t block_store_serialize(const block_store_t *const bs, const char *const filename)
 {
-    UNUSED(bs);
-    UNUSED(filename);
-    return 0;
+
+    if (bs == NULL || filename == NULL)
+    {
+        return 0;
+    }
+
+    FILE *ptr = fopen(filename, "w+");
+    if (ptr == NULL)
+    {
+        return 0;
+    }
+
+    size_t result = fwrite(bs, 1, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES, ptr);
+
+    return result;
 }
