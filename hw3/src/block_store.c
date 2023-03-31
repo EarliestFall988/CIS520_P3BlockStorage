@@ -26,74 +26,74 @@ typedef struct block_store
 
 block_store_t *block_store_create()
 {
-    block_store_t *bs_pointer = malloc(sizeof(block_store_t));
-    bs_pointer->bitmap = bitmap_create(BLOCK_STORE_NUM_BLOCKS);
+    block_store_t *bs_pointer = malloc(sizeof(block_store_t));   //allocates space for block
+    bs_pointer->bitmap = bitmap_create(BLOCK_STORE_NUM_BLOCKS);  //creates bitmap
 
-    bitmap_set(bs_pointer->bitmap, 127);
+    bitmap_set(bs_pointer->bitmap, 127);  //sets bitmap
 
-    return bs_pointer;
+    return bs_pointer; //returns block
 }
 
 void block_store_destroy(block_store_t *const bs)
 {
 
-    if (bs == NULL)
+    if (bs == NULL)     
     {
-        return;
+        return;     //exits if block is null
     }
 
-    free(bs);
+    free(bs);  //frees block
 }
 
 size_t block_store_allocate(block_store_t *const bs)
 {
     if (bs == NULL)
     {
-        return SIZE_MAX;
+        return SIZE_MAX;  //returns SIZE_MAX if block is null
     }
 
-    size_t first_zero = bitmap_ffz(bs->bitmap);
+    size_t first_zero = bitmap_ffz(bs->bitmap); //finds the first zero
 
     if (first_zero > BLOCK_STORE_AVAIL_BLOCKS)
     {
-        return SIZE_MAX;
+        return SIZE_MAX;  //returns SIZE_MAX if block is too small
     }
 
-    bitmap_set(bs->bitmap, first_zero);
-    bs->used++;
+    bitmap_set(bs->bitmap, first_zero); //sets bitmap
+    bs->used++;     //marks block as used
 
-    if (first_zero >= 128)
-        first_zero--;
+    if (first_zero >= 128)  
+        first_zero--;       //decrements 
 
-    return first_zero;
+    return first_zero;      //returns allocated block's id
 }
 
 bool block_store_request(block_store_t *const bs, const size_t block_id)
 {
     if (bs == NULL)
     {
-        return false;
+        return false;  //returns false if block is null
     }
     if (block_id >= bitmap_get_bits(bs->bitmap))
     {
-        return false;
+        return false;  //returns false if invalid block id
     }
     if (!(bitmap_test(bs->bitmap, block_id)))
     {
-        bitmap_set(bs->bitmap, block_id);
-        return true;
+        bitmap_set(bs->bitmap, block_id);  //sets bitmap at specified block id
+        return true;  //returns true when successful
     }
-    return false;
+    return false;       //returns false when unsuccessful
 }
 
 void block_store_release(block_store_t *const bs, const size_t block_id)
 {
     if (bs == NULL)
-        return;
+        return;         //returns when block is null
 
     if (block_id <= bitmap_get_bits(bs->bitmap))
     {
-        bitmap_reset(bs->bitmap, block_id);
+        bitmap_reset(bs->bitmap, block_id);     //resets blocks at specified id
     }
 }
 
@@ -101,23 +101,21 @@ size_t block_store_get_used_blocks(const block_store_t *const bs)
 {
     if (bs == NULL)
     {
-        return SIZE_MAX;
+        return SIZE_MAX;       //returns SIZE_MAX when block is null
     }
     else
     {
-        return bitmap_total_set(bs->bitmap) - 1;
+        return bitmap_total_set(bs->bitmap) - 1;    //returns total blocks used
     }
-
-    // return count;                       //return count
 }
 
 size_t block_store_get_free_blocks(const block_store_t *const bs)
 {
     if (bs == NULL)
     {
-        return SIZE_MAX;
+        return SIZE_MAX;    //returns SIZE_MAX when block is null
     }
-    return BLOCK_STORE_NUM_BLOCKS - bitmap_total_set(bs->bitmap);
+    return BLOCK_STORE_NUM_BLOCKS - bitmap_total_set(bs->bitmap);  //return total free blocks
 }
 
 size_t block_store_get_total_blocks()
