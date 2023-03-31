@@ -188,8 +188,30 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
 
 block_store_t *block_store_deserialize(const char *const filename)
 {
-    UNUSED(filename);
-    return NULL;
+
+    if (filename == NULL)
+    {
+        return NULL;
+    }
+
+    FILE *ptr = fopen(filename, "r");
+    if (ptr == NULL)
+    {
+        return NULL;
+    }
+
+    block_store_t *bs = block_store_create();
+
+    size_t result = fread(bs, 1, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES, ptr);
+
+    if (result == 0)
+    {
+        return NULL;
+    }
+
+    return bs;
+
+    // return NULL;
 }
 
 size_t block_store_serialize(const block_store_t *const bs, const char *const filename)
