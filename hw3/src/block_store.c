@@ -41,7 +41,7 @@ block_store_t *block_store_create()
 void block_store_destroy(block_store_t *const bs)
 {
 
-    if(bs == NULL)
+    if (bs == NULL)
     {
         return;
     }
@@ -141,35 +141,49 @@ size_t block_store_get_total_blocks()
 
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
 {
-    if(bs == NULL || buffer == NULL)
+    if (bs == NULL || buffer == NULL)
     {
         return 0;
     }
-    buffer = malloc(BLOCK_SIZE_BYTES);
-    memcpy(buffer,(void *)&(bs->data)[block_id],BLOCK_SIZE_BYTES);
-    free(buffer);
-    UNUSED(block_id);
+    if (block_id >= BLOCK_STORE_NUM_BLOCKS)
+    {
+        return 0;
+    }
+
+    memcpy(buffer, (void *)&(bs->data)[block_id], BLOCK_SIZE_BYTES);
+
     return BLOCK_SIZE_BYTES;
 }
 
 size_t block_store_write(block_store_t *const bs, const size_t block_id, const void *buffer)
 {
-    // if(bs == NULL || buffer == NULL||block_id >=BLOCK_STORE_NUM_BLOCKS)
-    // {
-    //     return 0;
-    // }
-    // if(bs->data == NULL)
-    // {
-    //     return 0;
-    // }
-    // memcpy(&(bs->data[block_id]), buffer,BLOCK_SIZE_BYTES);
-    // UNUSED(block_id);
-    // return BLOCK_SIZE_BYTES;
+    if (bs == NULL || buffer == NULL || block_id >= BLOCK_STORE_NUM_BLOCKS)
+    {
+        return 0;
+    }
+    if (bs->data == NULL)
+    {
+        return 0;
+    }
 
-    UNUSED(bs);
-    UNUSED(block_id);
-    UNUSED(buffer);
-    return 0;
+    size_t someResult = block_store_allocate(bs);
+
+    if (someResult == SIZE_MAX)
+    {
+        return 0;
+    }
+
+    bs->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS); // need to be more specfic with the location to alocate?
+
+    memcpy((void *)&(bs->data)[block_id], buffer, BLOCK_SIZE_BYTES);
+
+    // UNUSED(block_id);
+    return BLOCK_SIZE_BYTES;
+
+    // UNUSED(bs);
+    // UNUSED(block_id);
+    // UNUSED(buffer);
+    // return 0;
 }
 
 block_store_t *block_store_deserialize(const char *const filename)

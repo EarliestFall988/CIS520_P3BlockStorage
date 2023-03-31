@@ -214,14 +214,14 @@ TEST(block_store, count_free_and_used_null)
 TEST(block_store_write_read, valid_write)
 {
 
-    printf("running test");
-
     block_store_t *bs = NULL;
     bs = block_store_create();
     ASSERT_NE(nullptr, bs) << "block_store_create returned NULL when it should not have\n";
     uint8_t *buffer = (uint8_t *)calloc(1, BLOCK_SIZE_BYTES);
     ASSERT_NE(nullptr, buffer) << "malloc ... failed?" << std::endl;
     memset(buffer, '~', 10);
+
+    
 
     size_t id = 100;
     bool success = false;
