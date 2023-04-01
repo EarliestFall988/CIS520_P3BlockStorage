@@ -17,6 +17,7 @@
 
 // include more if you need
 
+//blockstore structure
 typedef struct block_store
 {
     bitmap_t *bitmap;
@@ -24,6 +25,7 @@ typedef struct block_store
     size_t used;
 } block_store_t;
 
+//Create and initialize the block store
 block_store_t *block_store_create()
 {
     block_store_t *bs_pointer = malloc(sizeof(block_store_t));   //allocates space for block
@@ -34,6 +36,7 @@ block_store_t *block_store_create()
     return bs_pointer; //returns block
 }
 
+//Destroy the given blockstore.
 void block_store_destroy(block_store_t *const bs)
 {
 
@@ -45,6 +48,7 @@ void block_store_destroy(block_store_t *const bs)
     free(bs);  //frees block
 }
 
+// Searches for a free block, marks it as in use, and returns the block's id
 size_t block_store_allocate(block_store_t *const bs)
 {
     if (bs == NULL)
@@ -68,6 +72,7 @@ size_t block_store_allocate(block_store_t *const bs)
     return first_zero;      //returns allocated block's id
 }
 
+//Attempts to allocate in bs at block_id
 bool block_store_request(block_store_t *const bs, const size_t block_id)
 {
     if (bs == NULL)
@@ -86,6 +91,7 @@ bool block_store_request(block_store_t *const bs, const size_t block_id)
     return false;       //returns false when unsuccessful
 }
 
+//Frees the block at the specified location
 void block_store_release(block_store_t *const bs, const size_t block_id)
 {
     if (bs == NULL)
@@ -97,6 +103,7 @@ void block_store_release(block_store_t *const bs, const size_t block_id)
     }
 }
 
+//Return the total number of used blocks
 size_t block_store_get_used_blocks(const block_store_t *const bs)
 {
     if (bs == NULL)
@@ -109,6 +116,7 @@ size_t block_store_get_used_blocks(const block_store_t *const bs)
     }
 }
 
+//Return the total number of free blocks
 size_t block_store_get_free_blocks(const block_store_t *const bs)
 {
     if (bs == NULL)
@@ -218,6 +226,7 @@ size_t block_store_serialize(const block_store_t *const bs, const char *const fi
     size_t result = write(file, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES); // write to file
 
     close(file); // close file
+  
 
     return result;
 }
