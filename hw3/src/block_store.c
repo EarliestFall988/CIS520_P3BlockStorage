@@ -28,7 +28,7 @@ block_store_t *block_store_create()
 {
     block_store_t *bs_pointer = malloc(sizeof(block_store_t));   //allocates space for block
     bs_pointer->bitmap = bitmap_create(BLOCK_STORE_NUM_BLOCKS);  //creates bitmap
-
+    bs_pointer->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS); // allocate memory for data
     bitmap_set(bs_pointer->bitmap, 127);  //sets bitmap
 
     return bs_pointer; //returns block
@@ -41,7 +41,7 @@ void block_store_destroy(block_store_t *const bs)
     {
         return;     //exits if block is null
     }
-
+    free(bs->bitmap);
     free(bs);  //frees block
 }
 
@@ -162,7 +162,7 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
         return 0;
     }
 
-    bs->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS); // allocate memory for data
+    
 
     memcpy((void *)&(bs->data)[block_id], buffer, BLOCK_SIZE_BYTES); // copy buffer to block store
 
