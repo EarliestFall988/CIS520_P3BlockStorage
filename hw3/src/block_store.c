@@ -28,8 +28,8 @@ block_store_t *block_store_create()
 {
     block_store_t *bs_pointer = malloc(sizeof(block_store_t));   //allocates space for block
     bs_pointer->bitmap = bitmap_create(BLOCK_STORE_NUM_BLOCKS);  //creates bitmap
+    error_check(); //checks for error
     
-
     bitmap_set(bs_pointer->bitmap, 127);  //sets bitmap
     bs_pointer->data = calloc(1, BLOCK_SIZE_BYTES * BLOCK_STORE_NUM_BLOCKS);
     //block_store_write(bs_pointer, 127, bs_pointer->bitmap);
@@ -57,6 +57,7 @@ size_t block_store_allocate(block_store_t *const bs)
     }
 
     size_t first_zero = bitmap_ffz(bs->bitmap); //finds the first zero
+    error_check(); //checks for error
 
     if (first_zero > BLOCK_STORE_AVAIL_BLOCKS)
     {
@@ -64,6 +65,7 @@ size_t block_store_allocate(block_store_t *const bs)
     }
 
     bitmap_set(bs->bitmap, first_zero); //sets bitmap
+    error_check(); //checks for error
     bs->used++;     //marks block as used
 
     if (first_zero >= 128)  
@@ -80,11 +82,14 @@ bool block_store_request(block_store_t *const bs, const size_t block_id)
     }
     if (block_id >= bitmap_get_bits(bs->bitmap))
     {
+        error_check(); //checks for error
         return false;  //returns false if invalid block id
     }
     if (!(bitmap_test(bs->bitmap, block_id)))
     {
         bitmap_set(bs->bitmap, block_id);  //sets bitmap at specified block id
+        error_check(); //checks for error
+
         return true;  //returns true when successful
     }
     return false;       //returns false when unsuccessful
@@ -98,6 +103,7 @@ void block_store_release(block_store_t *const bs, const size_t block_id)
     if (block_id <= bitmap_get_bits(bs->bitmap))
     {
         bitmap_reset(bs->bitmap, block_id);     //resets blocks at specified id
+        error_check(); //checks for error
     }
 }
 
@@ -110,6 +116,7 @@ size_t block_store_get_used_blocks(const block_store_t *const bs)
     else
     {
         return bitmap_total_set(bs->bitmap) - 1;    //returns total blocks used
+        error_check(); //checks for error
     }
 }
 
@@ -141,6 +148,7 @@ size_t block_store_read(const block_store_t *const bs, const size_t block_id, vo
     }
 
     memcpy(buffer, (void *)&(bs->data)[block_id], BLOCK_SIZE_BYTES); // copy block store to buffer
+    error_check(); //checks for error
 
     return BLOCK_SIZE_BYTES; // return number of bytes read which is BLOCK_SIZE_BYTES
 }
@@ -168,6 +176,8 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
 */
 
     memcpy((void *)&(bs->data)[block_id], buffer, BLOCK_SIZE_BYTES); // copy buffer to block store
+    error_check(); //checks for error
+
     return BLOCK_SIZE_BYTES; // return number of bytes written which is BLOCK_SIZE_BYTES
 }
 
@@ -181,6 +191,7 @@ block_store_t *block_store_deserialize(const char *const filename)
     }
 
     int f = open(filename, O_RDONLY); // open file with read only permissions
+    error_check(); //checks for error
 
     if (f == -1) // check if file is null
     {
@@ -192,6 +203,7 @@ block_store_t *block_store_deserialize(const char *const filename)
     ssize_t result = read(f, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES); // read from file
 
     close(f); // close file
+    error_check(); //checks for error
 
     if (result == -1) // check if result is null
     {
@@ -211,6 +223,8 @@ size_t block_store_serialize(const block_store_t *const bs, const char *const fi
     }
 
     int file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666); // open file
+    error_check(); //checks for error
+    
 
     if (file == -1) // check if file is null
     {
@@ -220,6 +234,15 @@ size_t block_store_serialize(const block_store_t *const bs, const char *const fi
     size_t result = write(file, bs, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES); // write to file
 
     close(file); // close file
+    error_check(); //checks for error
 
     return result;
+}
+
+void error_check()
+{
+    if(errno > 0)
+    {
+        printf("\nError no: %d\n", errno);      //if there's an error, prints the error number
+    }
 }

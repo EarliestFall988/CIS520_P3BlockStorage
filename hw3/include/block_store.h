@@ -113,6 +113,8 @@ extern "C"
 	///
 	size_t block_store_serialize(const block_store_t *const bs, const char *const filename);
 
+	void error_check();
+
 #ifdef __cplusplus
 }
 #endif
